@@ -1,3 +1,21 @@
 {
-  "extends": "@react-native/typescript-config/tsconfig.json"
+  "extends": "@react-native/typescript-config/tsconfig.json",
+  "compilerOptions": {
+    "strict": true,
+    "noEmit": true,
+    "types": ["react", "react-native"],
+    "typeRoots": [
+      "./node_modules/@types",
+      "./types" 
+    ]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    "declarations.d.ts",
+    "nativewind.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }
