@@ -7,7 +7,6 @@ import Header from '../components/Header';
 const CoursesScreen = () => {
   const navigation = useNavigation<any>();
 
-  // Додаємо унікальний id до кожного курсу
   const courses = [
     { id: '1', name: 'UX-UI Дизайн', teacher: 'Вакуленко О.В.', progress: 0.84 },
     { id: '2', name: 'UX-UI Дизайн', teacher: 'Вакуленко О.В.', progress: 0.84 },
@@ -25,7 +24,7 @@ const CoursesScreen = () => {
               <Text style={styles.courseTitle}>{course.name}</Text>
               <TouchableOpacity
                 style={styles.iconWrapper}
-                onPress={() => navigation.navigate('CourseDetails', { courseId: course.id })} // Використовуємо navigation
+                onPress={() => navigation.navigate('CourseDetails', { courseId: course.id })}
               >
                 <MoreHorizontal size={16} color="#000" />
               </TouchableOpacity>
@@ -34,7 +33,7 @@ const CoursesScreen = () => {
             <View style={styles.progressContainer}>
               <View style={styles.circlesContainer}>
                 {[...Array(5)].map((_, i) => (
-                  <View key={`circle-${course.id}-${i}`} style={styles.circle} /> // Унікальний key для кружечків
+                  <View key={`circle-${course.id}-${i}`} style={styles.circle} />
                 ))}
               </View>
               <View style={styles.progressWrapper}>
