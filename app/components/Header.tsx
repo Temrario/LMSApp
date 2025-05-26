@@ -6,12 +6,10 @@ import SearchIcon from '../assets/search.svg';
 const Header: React.FC = () => {
   return (
     <View style={styles.container}>
-      {/* Ліва частина: іконка списку (наприклад, бургер-меню) */}
       <TouchableOpacity style={styles.iconButton}>
         <ListIcon width={24} height={24} />
       </TouchableOpacity>
 
-      {/* Центральна частина: пошукове поле */}
       <View style={styles.searchContainer}>
         <TextInput
           style={styles.searchInput}
@@ -34,7 +32,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'space-between',
-    // невелика тінь для ефекту
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
