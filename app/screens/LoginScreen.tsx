@@ -1,11 +1,9 @@
 import React from 'react';
 import { View, Text, TextInput, StyleSheet, Button } from 'react-native';
-import Header from '../components/Header';
 
 const LoginScreen = () => {
   return (
     <View style={styles.container}>
-      <Header />
       <View style={styles.content}>
         <Text style={styles.text}>Login to LMS App</Text>
         <TextInput style={styles.input} placeholder="Username" />
