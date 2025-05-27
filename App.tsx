@@ -1,13 +1,16 @@
 import React from 'react';
 import { SafeAreaView, StyleSheet } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, NativeStackHeaderProps } from '@react-navigation/native-stack';
 
 import HomeScreen from './app/screens/HomeScreen';
 import LoginScreen from './app/screens/LoginScreen';
 import CoursesScreen from './app/screens/CoursesScreen';
 import TasksScreen from './app/screens/TasksScreen';
 import NewsScreen from './app/screens/NewsScreen';
+import ProfileScreen from './app/screens/ProfileScreen';
+import RatingScreen from './app/screens/RatingScreen';
+import Header from './app/components/Header';
 
 export type RootStackParamList = {
   HomeScreen: undefined;
@@ -15,20 +18,31 @@ export type RootStackParamList = {
   CoursesScreen: undefined;
   TasksScreen: undefined;
   NewsScreen: undefined;
+  ProfileScreen: undefined;
+  RatingScreen: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+const renderHeader = (props: NativeStackHeaderProps) => <Header {...props} />;
 
 const App = () => {
   return (
     <SafeAreaView style={styles.container}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="HomeScreen" screenOptions={{ headerShown: false }}>
+        <Stack.Navigator
+          initialRouteName="HomeScreen"
+          screenOptions={{
+            header: renderHeader,
+          }}
+        >
           <Stack.Screen name="HomeScreen" component={HomeScreen} />
           <Stack.Screen name="LoginScreen" component={LoginScreen} />
           <Stack.Screen name="CoursesScreen" component={CoursesScreen} />
           <Stack.Screen name="TasksScreen" component={TasksScreen} />
           <Stack.Screen name="NewsScreen" component={NewsScreen} />
+          <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
+          <Stack.Screen name="RatingScreen" component={RatingScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>

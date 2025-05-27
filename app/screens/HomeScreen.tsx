@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-import Header from '../components/Header';
 import WorkCalendar from '../components/WorkCalendar';
 import ArcProgress from '../components/ArcProgress';
 import { useNavigation } from '@react-navigation/native';
@@ -15,10 +14,8 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Головна</Text>
-
         <View style={styles.progressContainer}>
           <Text style={styles.progressTitle}>До кінця семестру</Text>
           <ArcProgress progress={progress} color="#000"/>

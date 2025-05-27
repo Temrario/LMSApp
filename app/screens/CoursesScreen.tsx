@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MoreHorizontal } from 'lucide-react-native';
-import Header from '../components/Header';
 
 const CoursesScreen = () => {
   const navigation = useNavigation<any>();
@@ -15,7 +14,6 @@ const CoursesScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Мої курси</Text>
         {courses.map((course) => (

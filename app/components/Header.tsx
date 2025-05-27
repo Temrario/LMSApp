@@ -1,12 +1,28 @@
-import React from 'react';
-import { View, TextInput, TouchableOpacity, StyleSheet } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal, FlatList } from 'react-native';
 import ListIcon from '../assets/list.svg';
 import SearchIcon from '../assets/search.svg';
 
-const Header: React.FC = () => {
+const Header: React.FC<{ navigation?: any }> = ({ navigation }) => {
+  const [menuVisible, setMenuVisible] = useState(false);
+
+  const menuItems = [
+    { id: '1', title: 'Головна', screen: 'HomeScreen' },
+    { id: '2', title: 'Курси', screen: 'CoursesScreen' },
+    { id: '3', title: 'Рейтинг', screen: 'RatingScreen' },
+    { id: '4', title: 'Профіль', screen: 'ProfileScreen' },
+  ];
+
+  const handleMenuItemPress = (screen: string) => {
+    if (navigation) {
+      navigation.navigate(screen);
+    }
+    setMenuVisible(false);
+  };
+
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.iconButton}>
+      <TouchableOpacity style={styles.iconButton} onPress={() => setMenuVisible(true)}>
         <ListIcon width={24} height={24} />
       </TouchableOpacity>
 
@@ -20,6 +36,33 @@ const Header: React.FC = () => {
           <SearchIcon width={16} height={16} />
         </TouchableOpacity>
       </View>
+
+      <Modal
+        transparent={true}
+        visible={menuVisible}
+        animationType="slide"
+        onRequestClose={() => setMenuVisible(false)}
+      >
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          onPress={() => setMenuVisible(false)}
+        >
+          <View style={styles.menuContainer}>
+            <FlatList
+              data={menuItems}
+              keyExtractor={(item) => item.id}
+              renderItem={({ item }) => (
+                <TouchableOpacity
+                  style={styles.menuItem}
+                  onPress={() => handleMenuItemPress(item.screen)}
+                >
+                  <Text style={styles.menuItemText}>{item.title}</Text>
+                </TouchableOpacity>
+              )}
+            />
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </View>
   );
 };
@@ -60,6 +103,28 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     padding: 6,
     borderRadius: 20,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'flex-start',
+  },
+  menuContainer: {
+    width: '70%',
+    height: '100%',
+    backgroundColor: '#d3d3d3',
+    paddingTop: 50,
+    paddingHorizontal: 16,
+  },
+  menuItem: {
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  menuItemText: {
+    fontSize: 18,
+    color: '#000',
+    fontWeight: '500',
   },
 });
 
