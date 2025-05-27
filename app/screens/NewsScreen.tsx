@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import Header from '../components/Header';
 
 const NewsScreen = () => {
   const newsItems = [
@@ -24,7 +23,6 @@ const NewsScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.titleContainer}>
           <Text style={styles.title}>НОВИНИ</Text>
