@@ -2,15 +2,10 @@ import React from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { MoreHorizontal } from 'lucide-react-native';
+import { courses } from '../data/courses';
 
 const CoursesScreen = () => {
   const navigation = useNavigation<any>();
-
-  const courses = [
-    { id: '1', name: 'UX-UI Дизайн', teacher: 'Вакуленко О.В.', progress: 0.84 },
-    { id: '2', name: 'UX-UI Дизайн', teacher: 'Вакуленко О.В.', progress: 0.84 },
-    { id: '3', name: 'UX-UI Дизайн', teacher: 'Вакуленко О.В.', progress: 0.84 },
-  ];
 
   return (
     <View style={styles.container}>
@@ -23,7 +18,7 @@ const CoursesScreen = () => {
               <TouchableOpacity
                 style={styles.iconWrapper}
                 onPress={() => navigation.navigate('CourseDetails', { courseId: course.id })}
-              >
+                >
                 <MoreHorizontal size={16} color="#000" />
               </TouchableOpacity>
             </View>

@@ -10,7 +10,17 @@ import TasksScreen from './app/screens/TasksScreen';
 import NewsScreen from './app/screens/NewsScreen';
 import ProfileScreen from './app/screens/ProfileScreen';
 import RatingScreen from './app/screens/RatingScreen';
+import CourseDetailsScreen from './app/screens/CourseDetailsScreen';
 import Header from './app/components/Header';
+
+export type CourseType = {
+  title: string;
+  topics: number;
+  lectures: number;
+  hours: number;
+  syllabus: { title: string; subtitle: string }[];
+  sections: string[];
+};
 
 export type RootStackParamList = {
   HomeScreen: undefined;
@@ -20,6 +30,7 @@ export type RootStackParamList = {
   NewsScreen: undefined;
   ProfileScreen: undefined;
   RatingScreen: undefined;
+  CourseDetails: { courseId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -43,6 +54,7 @@ const App = () => {
           <Stack.Screen name="NewsScreen" component={NewsScreen} />
           <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
           <Stack.Screen name="RatingScreen" component={RatingScreen} />
+          <Stack.Screen name="CourseDetails" component={CourseDetailsScreen} options={{ title: 'Курс' }} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
