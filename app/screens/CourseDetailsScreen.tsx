@@ -1,17 +1,22 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet, Linking } from 'react-native';
 import { useRoute, RouteProp } from '@react-navigation/native';
 import type { RootStackParamList } from '../../App';
 import { courseDetailsMap, CourseDetails } from '../data/courseDetails';
+import { tasksData, Task } from '../data/tasks';
+import { newsData, NewsItem } from '../data/newsData';
 
-const tabs = ['Про курс', 'Завдання', 'Учасники', 'Форум'];
+const tabs = ['Про курс', 'Завдання', 'Новини'] as const;
+
+type Tab = typeof tabs[number];
 
 type CourseDetailsRouteProp = RouteProp<RootStackParamList, 'CourseDetails'>;
 
 const CourseDetailsScreen = () => {
   const route = useRoute<CourseDetailsRouteProp>();
   const { courseId } = route.params;
-  const [activeTab, setActiveTab] = useState('Про курс');
+
+  const [activeTab, setActiveTab] = useState<Tab>('Про курс');
   const [expandedBlock, setExpandedBlock] = useState<string | null>(null);
 
   const course: CourseDetails | undefined = courseDetailsMap[courseId];
@@ -19,6 +24,20 @@ const CourseDetailsScreen = () => {
   if (!course) {
     return <Text style={styles.notFoundText}>Курс не знайдено</Text>;
   }
+
+  // Об’єднуємо всі завдання
+  const allTasks: Task[] = [
+    ...tasksData.notCompleted,
+    ...tasksData.underReview,
+    ...tasksData.completed,
+  ];
+
+  // Фільтруємо завдання по курсу (по course.description)
+  const courseTasks = allTasks.filter((task) => task.subject === course.description);
+
+  // Фільтруємо новини по courseId (тут треба переконатися, що courseId - string, не undefined)
+  // Якщо courseId може бути undefined, то треба перевірити або привести до рядка
+  const courseNews: NewsItem[] = newsData.filter((news) => news.courseId === courseId);
 
   const toggleBlock = (blockName: string) => {
     setExpandedBlock((prev) => (prev === blockName ? null : blockName));
@@ -45,45 +64,93 @@ const CourseDetailsScreen = () => {
         ))}
       </View>
 
-      <Text style={styles.infoTitle}>Інформація</Text>
-      <View style={styles.infoContainer}>
-        {[
-          ['тем', course.topics],
-          ['лекцій', course.lectures],
-          ['годин', course.hours],
-        ].map(([label, count]) => (
-          <View key={label} style={styles.infoCard}>
-            <View style={styles.infoDot} />
-            <Text style={styles.infoCount}>{count ?? 0}</Text>
-            <Text style={styles.infoLabel}>{label}</Text>
+      {activeTab === 'Про курс' && (
+        <>
+          <Text style={styles.infoTitle}>Інформація</Text>
+          <View style={styles.infoContainer}>
+            {[
+              ['тем', course.topics],
+              ['лекцій', course.lectures],
+              ['годин', course.hours],
+            ].map(([label, count]) => (
+              <View key={label} style={styles.infoCard}>
+                <View style={styles.infoDot} />
+                <Text style={styles.infoCount}>{count ?? 0}</Text>
+                <Text style={styles.infoLabel}>{label}</Text>
+              </View>
+            ))}
           </View>
-        ))}
-      </View>
 
-      <View style={styles.sectionsSpacer} />
+          <View style={styles.sectionsSpacer} />
 
-      {course.sections.map((section, index) => (
-        <View key={`${section.title}-${index}`} style={styles.sectionWrapper}>
-          <TouchableOpacity
-            onPress={() => toggleBlock(section.title)}
-            style={styles.accordionHeader}
-          >
-            <Text style={styles.accordionTitle}>{section.title}</Text>
-            <Text style={styles.sectionArrow}>
-              {expandedBlock === section.title ? '˅' : '›'}
-            </Text>
-          </TouchableOpacity>
-          {expandedBlock === section.title && (
-            <View style={styles.sectionContent}>
-              {section.content.map((contentItem, idx) => (
-                <Text key={`${section.title}-content-${idx}`} style={styles.sectionText}>
-                  • {contentItem}
+          {course.sections.map((section, index) => (
+            <View key={`${section.title}-${index}`} style={styles.sectionWrapper}>
+              <TouchableOpacity
+                onPress={() => toggleBlock(section.title)}
+                style={styles.accordionHeader}
+              >
+                <Text style={styles.accordionTitle}>{section.title}</Text>
+                <Text style={styles.sectionArrow}>
+                  {expandedBlock === section.title ? '˅' : '›'}
                 </Text>
-              ))}
+              </TouchableOpacity>
+              {expandedBlock === section.title && (
+                <View style={styles.sectionContent}>
+                  {section.content.map((contentItem, idx) => (
+                    <Text key={`${section.title}-content-${idx}`} style={styles.sectionText}>
+                      • {contentItem}
+                    </Text>
+                  ))}
+                </View>
+              )}
             </View>
+          ))}
+        </>
+      )}
+
+      {activeTab === 'Завдання' && (
+        <>
+          <Text style={styles.infoTitle}>Завдання</Text>
+          {courseTasks.length > 0 ? (
+            courseTasks.map((task) => (
+              <View key={task.id} style={styles.taskCard}>
+                <Text style={styles.taskTitle}>{task.title}</Text>
+                <Text style={styles.taskSubject}>{task.subject}</Text>
+                <Text style={styles.taskDates}>
+                  Видано: {task.issuedAt} | Термін: {task.deadline} ({task.dueIn})
+                </Text>
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noTasksText}>Завдань не знайдено.</Text>
           )}
-        </View>
-      ))}
+        </>
+      )}
+
+      {activeTab === 'Новини' && (
+        <>
+          <Text style={styles.infoTitle}>Новини</Text>
+          {courseNews.length > 0 ? (
+            courseNews.map((news) => (
+              <View key={news.id} style={styles.newsCard}>
+                <Text style={styles.newsTitle}>{news.title}</Text>
+                <Text style={styles.newsDate}>{news.date}</Text>
+                <Text style={styles.newsSummary}>{news.summary}</Text>
+                {news.url && (
+                  <Text
+                    style={styles.newsLink}
+                    onPress={() => Linking.openURL(news.url!)} // news.url - опціональний, тут додаємо '!' щоб TS не лаявся
+                  >
+                    Читати далі
+                  </Text>
+                )}
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noTasksText}>Поки що немає новин для цього курсу.</Text>
+          )}
+        </>
+      )}
 
       <View style={styles.bottomSpacer} />
     </ScrollView>
@@ -109,8 +176,7 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   tabsContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
+    flexDirection: 'column',
     gap: 8,
     paddingHorizontal: 16,
     marginTop: 24,
@@ -118,21 +184,18 @@ const styles = StyleSheet.create({
   tab: {
     paddingHorizontal: 20,
     paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 2,
+    alignItems: 'flex-start',
+    borderRadius: 8,
+    width: '100%',
   },
   activeTab: {
     backgroundColor: '#000',
-    borderColor: '#000',
+    width: '80%',
+    alignSelf: 'flex-start',
   },
   inactiveTab: {
     backgroundColor: '#fff',
-    borderColor: '#d3d3d3',
+    borderRadius: 8,
   },
   tabText: {
     fontSize: 16,
@@ -231,8 +294,74 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     marginBottom: 6,
   },
+  taskCard: {
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  taskTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#000',
+  },
+  taskSubject: {
+    fontSize: 14,
+    color: '#555',
+    marginBottom: 4,
+  },
+  taskDates: {
+    fontSize: 12,
+    color: '#888',
+  },
+  noTasksText: {
+    textAlign: 'center',
+    marginTop: 24,
+    fontSize: 14,
+    color: '#666',
+  },
+  newsCard: {
+    backgroundColor: '#fff',
+    marginHorizontal: 16,
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.2,
+    shadowRadius: 2,
+    elevation: 2,
+  },
+  newsTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 4,
+    color: '#000',
+  },
+  newsDate: {
+    fontSize: 12,
+    color: '#888',
+    marginBottom: 8,
+  },
+  newsSummary: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 8,
+  },
+  newsLink: {
+    fontSize: 14,
+    color: '#1E90FF',
+    textDecorationLine: 'underline',
+  },
   bottomSpacer: {
-    marginBottom: 40,
+    height: 100,
   },
 });
 
