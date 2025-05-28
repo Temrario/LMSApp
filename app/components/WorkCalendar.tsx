@@ -1,40 +1,13 @@
 import React from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-
-const days = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт'] as const;
-const hours = ['08:00', '09:00', '10:00', '11:00', '12:00', '13:00', '14:00'] as const;
-
-type DayKey = typeof days[number];
-type HourKey = typeof hours[number];
-type EventType = 'lecture' | 'lab' | 'practice';
-
-type Event = {
-  subject: string;
-  type: EventType;
-};
-
-const schedule: Record<DayKey, Partial<Record<HourKey, Event>>> = {
-  Пн: {
-    '08:00': { subject: 'Математика', type: 'lecture' },
-    '10:00': { subject: 'Фізика', type: 'lab' },
-  },
-  Вт: {
-    '09:00': { subject: 'Інформатика', type: 'lecture' },
-    '12:00': { subject: 'Англійська', type: 'practice' },
-  },
-  Ср: {
-    '08:00': { subject: 'Історія', type: 'lecture' },
-    '11:00': { subject: 'Біологія', type: 'lab' },
-  },
-  Чт: {
-    '09:00': { subject: 'Хімія', type: 'lecture' },
-    '13:00': { subject: 'Фізкультура', type: 'practice' },
-  },
-  Пт: {
-    '08:00': { subject: 'Дизайн', type: 'lecture' },
-    '10:00': { subject: 'Програмування', type: 'lab' },
-  },
-};
+import {
+  days,
+  hours,
+  type DayKey,
+  type HourKey,
+  type EventType,
+  schedule,
+} from '../data/scheduleData';
 
 const typeColors: Record<EventType, string> = {
   lecture: '#AEDFF7',
@@ -42,21 +15,21 @@ const typeColors: Record<EventType, string> = {
   practice: '#FFF3B0',
 };
 
-const WorkCalendar = () => {
+const WorkCalendar: React.FC = () => {
   return (
     <View style={styles.wrapper}>
       <ScrollView horizontal showsHorizontalScrollIndicator={false}>
         <View style={styles.calendar}>
           <View style={styles.timeColumn}>
             <Text style={styles.emptyHeader} />
-            {hours.map((hour) => (
+            {hours.map((hour: HourKey) => (
               <Text key={hour} style={styles.hourText}>{hour}</Text>
             ))}
           </View>
-          {days.map((day) => (
+          {days.map((day: DayKey) => (
             <View key={day} style={styles.dayColumn}>
               <Text style={styles.dayText}>{day}</Text>
-              {hours.map((hour) => {
+              {hours.map((hour: HourKey) => {
                 const event = schedule[day]?.[hour];
                 return event ? (
                   <View

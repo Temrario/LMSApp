@@ -37,7 +37,7 @@ const HomeScreen = () => {
               <Text style={styles.cardValue}>5</Text>
               <View style={styles.iconWrapper}><ArrowUpRight size={16} color="#000" /></View>
             </View>
-            <Text style={styles.cardLabel}>Невиконаних завдань</Text>
+            <Text style={styles.cardLabel}>Завдання</Text>
           </TouchableOpacity>
         </View>
 
