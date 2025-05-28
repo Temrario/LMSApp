@@ -13,6 +13,8 @@ import ProfileScreen from './app/screens/ProfileScreen';
 import RatingScreen from './app/screens/RatingScreen';
 import CourseDetailsScreen from './app/screens/CourseDetailsScreen';
 import Header from './app/components/Header';
+import TaskDetailsScreen from './app/screens/TaskDetailsScreen';
+
 
 
 export type CourseType = {
@@ -42,7 +44,7 @@ export type RootStackParamList = {
   ProfileScreen: undefined;
   RatingScreen: undefined;
   CourseDetails: { courseId: string };
-   TaskDetails: { task: Task };
+  TaskDetails: { task: Task };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -68,6 +70,7 @@ const App = () => {
             <Stack.Screen name="ProfileScreen" component={ProfileScreen} />
             <Stack.Screen name="RatingScreen" component={RatingScreen} />
             <Stack.Screen name="CourseDetails" component={CourseDetailsScreen} options={{ title: 'Курс' }} />
+            <Stack.Screen name="TaskDetails" component={TaskDetailsScreen} options={{ title: 'Завдання' }} />
           </Stack.Navigator>
         </NavigationContainer>
       </SafeAreaView>

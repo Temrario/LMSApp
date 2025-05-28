@@ -1,3 +1,12 @@
+export type Task = {
+  id: string;
+  subject: string;
+  title: string;
+  issuedAt: string;
+  deadline: string;
+  dueIn: string;
+};
+
 export const tasksData = {
   notCompleted: [
     {

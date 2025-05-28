@@ -8,7 +8,9 @@ import {
   TextInput,
 } from 'react-native';
 import { tasksData } from '../data/tasks';
-
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { RootStackParamList } from '../../App';
 
 interface Task {
   id: string;
@@ -21,7 +23,22 @@ interface Task {
 
 const Tabs = ['Не виконані', 'На перевірці', 'Виконані'];
 
+const TaskCard = ({ task, onPress }: { task: Task; onPress: () => void }) => (
+  <TouchableOpacity onPress={onPress} style={styles.taskCard}>
+    <View style={styles.taskTop}>
+      <Text style={styles.subject}>{task.subject}</Text>
+      <Text style={styles.titleText}>{task.title}</Text>
+    </View>
+    <View style={styles.taskBottom}>
+      <Text style={styles.date}>Видано: {task.issuedAt}</Text>
+      <Text style={styles.date}>Дедлайн: {task.deadline}</Text>
+      <Text style={styles.due}>До здачі: {task.dueIn}</Text>
+    </View>
+  </TouchableOpacity>
+);
+
 const TasksScreen = () => {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const [activeTab, setActiveTab] = useState('Не виконані');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortAsc, setSortAsc] = useState(true);
@@ -29,37 +46,28 @@ const TasksScreen = () => {
   const getTasksByTab = (): Task[] => {
     let tasks: Task[] = [];
     switch (activeTab) {
-      case 'Не виконані': {
+      case 'Не виконані':
         tasks = tasksData.notCompleted;
         break;
-      }
-      case 'На перевірці': {
+      case 'На перевірці':
         tasks = tasksData.underReview;
         break;
-      }
-      case 'Виконані': {
+      case 'Виконані':
         tasks = tasksData.completed;
         break;
-      }
     }
 
-    // Фільтр пошуку
     if (searchQuery.trim()) {
       tasks = tasks.filter(task =>
         task.title.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
-    // Сортування за назвою
-    tasks.sort((a, b) => {
-      if (sortAsc) {
-        return a.title.localeCompare(b.title);
-      } else {
-        return b.title.localeCompare(a.title);
-      }
-    });
-
-    return tasks;
+    return tasks.sort((a, b) =>
+      sortAsc
+        ? a.title.localeCompare(b.title)
+        : b.title.localeCompare(a.title)
+    );
   };
 
   return (
@@ -94,24 +102,16 @@ const TasksScreen = () => {
           style={styles.subjectButton}
           onPress={() => setSortAsc(prev => !prev)}
         >
-          <Text style={styles.searchText}>
-            Сортувати {sortAsc ? '↑' : '↓'}
-          </Text>
+          <Text style={styles.searchText}>Сортувати {sortAsc ? '↑' : '↓'}</Text>
         </TouchableOpacity>
       </View>
 
       {getTasksByTab().map(task => (
-        <View key={task.id} style={styles.taskCard}>
-          <View style={styles.taskTop}>
-            <Text style={styles.subject}>{task.subject}</Text>
-            <Text style={styles.titleText}>{task.title}</Text>
-          </View>
-          <View style={styles.taskBottom}>
-            <Text style={styles.date}>Видано: {task.issuedAt}</Text>
-            <Text style={styles.date}>Дедлайн: {task.deadline}</Text>
-            <Text style={styles.due}>До здачі: {task.dueIn}</Text>
-          </View>
-        </View>
+        <TaskCard
+          key={task.id}
+          task={task}
+          onPress={() => navigation.navigate('TaskDetails', { task })}
+        />
       ))}
     </ScrollView>
   );
@@ -119,7 +119,7 @@ const TasksScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#eaeaea',
+    backgroundColor: '#f0f0f0',
     flex: 1,
     paddingHorizontal: 16,
   },
@@ -131,20 +131,22 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: 'column',
+    gap: 8,
     marginBottom: 16,
   },
   tabButton: {
-    flex: 1,
     backgroundColor: '#fff',
-    paddingVertical: 10,
-    marginHorizontal: 4,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: 'flex-start', // Текст вирівняний зліва
+    width: '100%',
   },
   activeTab: {
     backgroundColor: '#000',
+    width: '80%', // Зменшення ширини з правого боку
+    alignSelf: 'flex-start', // Лівий край вирівняний із неактивними вкладками
   },
   tabText: {
     color: '#000',
@@ -169,14 +171,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     padding: 10,
     borderRadius: 8,
-    width: 120,
+    width: 100,
     alignItems: 'center',
   },
   searchText: {
     color: '#000',
   },
   taskCard: {
-    backgroundColor: '#c2c2c2',
+    backgroundColor: '#d3d3d3',
     borderRadius: 12,
     marginBottom: 16,
     overflow: 'hidden',
