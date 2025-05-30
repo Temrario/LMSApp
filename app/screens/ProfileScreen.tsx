@@ -8,9 +8,29 @@ import {
   StyleSheet,
 } from 'react-native';
 
-const ProfileScreen = () => {
+const ProfileScreen: React.FC = () => {
   const [activeTab, setActiveTab] = useState('Інформація');
-  const [activeTheme, setActiveTheme] = useState('Система'); // Стан для активної теми
+  const [activeTheme, setActiveTheme] = useState('Система');
+  const [notifications, setNotifications] = useState({
+    updateSchedule: false,
+    reapplyTasks: false,
+    errorTasks: false,
+    shareWindows: false,
+    userMessages: false,
+  });
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  const toggleNotification = (key: keyof typeof notifications) => {
+    setNotifications((prev) => ({
+      ...prev,
+      [key]: !prev[key],
+    }));
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -43,24 +63,24 @@ const ProfileScreen = () => {
             <View style={styles.profileRow}>
               <View style={styles.avatar} />
               <View style={styles.profileTextContainer}>
-                <Text style={styles.fullName}>Афанасьєва Дар’я Олександрівна</Text>
-                <Text style={styles.group}>Студентка групи ІД-21</Text>
-                <Text style={styles.email}>afonydaria@gmail.com</Text>
+                <Text style={styles.fullName}>Ванін Михайло Юрійович</Text>
+                <Text style={styles.group}>Студент(ка) групи 1П-21</Text>
+                <Text style={styles.email}>someone@gmail.com</Text>
               </View>
             </View>
 
             <View style={styles.infoRow}>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>Ім’я</Text>
-                <Text style={styles.value}>Дар’я</Text>
+                <Text style={styles.value}>Михайло</Text>
               </View>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>Прізвище</Text>
-                <Text style={styles.value}>Афанасьєва</Text>
+                <Text style={styles.value}>Ванін</Text>
               </View>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>По батькові</Text>
-                <Text style={styles.value}>Олександрівна</Text>
+                <Text style={styles.value}>Юрійович</Text>
               </View>
             </View>
           </View>
@@ -69,11 +89,11 @@ const ProfileScreen = () => {
             <View style={styles.infoRow}>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>Email</Text>
-                <Text style={styles.value}>afonydaria@gmail.com</Text>
+                <Text style={styles.value}>someone@gmail.com</Text>
               </View>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>Група</Text>
-                <Text style={styles.value}>ІД-21</Text>
+                <Text style={styles.value}>ІП-21</Text>
               </View>
             </View>
           </View>
@@ -82,11 +102,11 @@ const ProfileScreen = () => {
             <View style={styles.infoRow}>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>Номер телефону</Text>
-                <Text style={styles.value}>+ (380) 93 109 18 03</Text>
+                <Text style={styles.value}>+ (380) 96 000 00 00</Text>
               </View>
               <View style={styles.infoBlock}>
                 <Text style={styles.label}>Спеціальність</Text>
-                <Text style={styles.value}>022 Дизайн</Text>
+                <Text style={styles.value}>121 Програмне забезпечення</Text>
               </View>
             </View>
           </View>
@@ -111,69 +131,80 @@ const ProfileScreen = () => {
             </View>
             <View style={styles.inputSection}>
               <Text style={styles.label}>Ім’я</Text>
-              <TextInput style={styles.input} placeholder="Дар’я" placeholderTextColor="#999" />
+              <TextInput style={styles.input} placeholder="Михайло" placeholderTextColor="#999" />
               <Text style={styles.label}>Прізвище</Text>
-              <TextInput style={styles.input} placeholder="Афанасьєва" placeholderTextColor="#999" />
+              <TextInput style={styles.input} placeholder="Ванін" placeholderTextColor="#999" />
               <Text style={styles.label}>Email</Text>
-              <TextInput style={styles.input} placeholder="afonydaria@gmail.com" placeholderTextColor="#999" />
+              <TextInput style={styles.input} placeholder="someone@gmail.com" placeholderTextColor="#999" />
               <Text style={styles.label}>Номер телефону</Text>
-              <TextInput style={styles.input} placeholder="+ (380) 93 109 18 03" placeholderTextColor="#999" />
+              <TextInput style={styles.input} placeholder="+ (380) 96 000 00 00" placeholderTextColor="#999" />
             </View>
           </View>
 
-          {/* Нова секція "Тема" */}
           <View style={styles.card}>
             <Text style={styles.personalInfoTitle}>Тема</Text>
             <Text style={styles.registrationDate}>Налаштуй свою тему</Text>
             <View style={styles.divider} />
             <View style={styles.themeRow}>
-              <TouchableOpacity
-                style={[
-                  styles.themeItem,
-                  activeTheme === 'Система' && styles.themeActive,
-                  activeTheme === 'Система' && styles.themeHover,
-                ]}
-                onPress={() => setActiveTheme('Система')}
-              >
-                <View style={styles.themeBlock}>
-                  {activeTheme === 'Система' && <View style={styles.themeIndicator} />}
-                </View>
-                <Text style={styles.themeLabel}>Система</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.themeItem,
-                  activeTheme === 'Світла' && styles.themeActive,
-                  activeTheme === 'Світла' && styles.themeHover,
-                ]}
-                onPress={() => setActiveTheme('Світла')}
-              >
-                <View style={styles.themeBlock} />
-                <Text style={styles.themeLabel}>Світла</Text>
-              </TouchableOpacity>
+              {['Система', 'Світла', 'Темна', 'Комфорт для очей'].map((theme) => (
+                <TouchableOpacity
+                  key={theme}
+                  style={styles.themeItem}
+                  onPress={() => setActiveTheme(theme)}
+                  activeOpacity={0.7}
+                >
+                  <View
+                    style={[
+                      styles.themeBlock,
+                      activeTheme === theme && styles.themeBlockActive,
+                    ]}
+                  >
+                    {activeTheme === theme && <View style={styles.themeIndicator} />}
+                  </View>
+                  <Text style={styles.themeLabel}>{theme}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
-            <View style={styles.themeRow}>
+          </View>
+
+          <View style={styles.card}>
+            <Text style={styles.personalInfoTitle}>Налаштування сповіщень</Text>
+            <View style={styles.divider} />
+            <View style={styles.notificationContainer}>
               <TouchableOpacity
-                style={[
-                  styles.themeItem,
-                  activeTheme === 'Темна' && styles.themeActive,
-                  activeTheme === 'Темна' && styles.themeHover,
-                ]}
-                onPress={() => setActiveTheme('Темна')}
+                style={styles.notificationRow}
+                onPress={() => toggleNotification('updateSchedule')}
               >
-                <View style={styles.themeBlock} />
-                <Text style={styles.themeLabel}>Темна</Text>
+                <Text style={styles.notificationText}>Про оновлення та заміни в розкладі</Text>
+                <View style={[styles.customCheckbox, notifications.updateSchedule && styles.customCheckboxChecked]} />
               </TouchableOpacity>
               <TouchableOpacity
-                style={[
-                  styles.themeItem,
-                  activeTheme === 'Комфорт для очей' && styles.themeActive,
-                  activeTheme === 'Комфорт для очей' && styles.themeHover,
-                ]}
-                onPress={() => setActiveTheme('Комфорт для очей')}
+                style={styles.notificationRow}
+                onPress={() => toggleNotification('reapplyTasks')}
               >
-                <View style={styles.themeBlock} />
-                <Text style={styles.themeLabel}>Комфорт для очей</Text>
+                <Text style={styles.notificationText}>Про перереєстрацію насилишних заяв</Text>
+                <View style={[styles.customCheckbox, notifications.reapplyTasks && styles.customCheckboxChecked]} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.notificationRow}
+                onPress={() => toggleNotification('errorTasks')}
+              >
+                <Text style={styles.notificationText}>Про помилкові насилишні заявки</Text>
+                <View style={[styles.customCheckbox, notifications.errorTasks && styles.customCheckboxChecked]} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.notificationRow}
+                onPress={() => toggleNotification('shareWindows')}
+              >
+                <Text style={styles.notificationText}>Про розмилення викладачем д/з</Text>
+                <View style={[styles.customCheckbox, notifications.shareWindows && styles.customCheckboxChecked]} />
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.notificationRow}
+                onPress={() => toggleNotification('userMessages')}
+              >
+                <Text style={styles.notificationText}>Про повідомлення в месенджері</Text>
+                <View style={[styles.customCheckbox, notifications.userMessages && styles.customCheckboxChecked]} />
               </TouchableOpacity>
             </View>
           </View>
@@ -182,7 +213,89 @@ const ProfileScreen = () => {
 
       {activeTab === 'Безпека' && (
         <View style={styles.content}>
-          <Text style={styles.placeholderText}>Безпека ще не реалізовано.</Text>
+          <View style={styles.card}>
+            <Text style={styles.personalInfoTitle}>Пароль</Text>
+            <View style={styles.securityHeader}>
+              <View style={styles.securityAvatar} />
+              <View>
+                <Text style={styles.registrationDate}>Змінити пароль</Text>
+                <Text style={styles.securityDescription}>Оновіть пароль для посилення безпеки акаунту</Text>
+              </View>
+            </View>
+            <View style={styles.divider} />
+
+            <View style={styles.passwordSection}>
+              <Text style={styles.passwordLabel}>Поточний пароль</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  secureTextEntry={!showCurrentPassword}
+                  placeholder="••••••••••••••••"
+                  placeholderTextColor="#999"
+                  value={currentPassword}
+                  onChangeText={setCurrentPassword}
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowCurrentPassword(!showCurrentPassword)}
+                >
+                  <View style={[styles.customCheckbox, showCurrentPassword && styles.customCheckboxChecked]} />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.passwordLabel}>Новий пароль</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  secureTextEntry={!showNewPassword}
+                  placeholder="••••••••••••••••"
+                  placeholderTextColor="#999"
+                  value={newPassword}
+                  onChangeText={setNewPassword}
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowNewPassword(!showNewPassword)}
+                >
+                  <View style={[styles.customCheckbox, showNewPassword && styles.customCheckboxChecked]} />
+                </TouchableOpacity>
+              </View>
+
+              <Text style={styles.passwordLabel}>Підтвердити новий пароль</Text>
+              <View style={styles.passwordInputContainer}>
+                <TextInput
+                  style={styles.passwordInput}
+                  secureTextEntry={!showConfirmPassword}
+                  placeholder="••••••••••••••••"
+                  placeholderTextColor="#999"
+                  value={confirmPassword}
+                  onChangeText={setConfirmPassword}
+                />
+                <TouchableOpacity
+                  style={styles.passwordToggle}
+                  onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                >
+                  <View style={[styles.customCheckbox, showConfirmPassword && styles.customCheckboxChecked]} />
+                </TouchableOpacity>
+              </View>
+
+              <View style={styles.passwordRequirements}>
+                <Text style={styles.requirementTitle}>Пароль має містити:</Text>
+                <View style={styles.requirementItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.requirementText}>Принаймні 1 велику літеру</Text>
+                </View>
+                <View style={styles.requirementItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.requirementText}>Принаймні 1 цифру</Text>
+                </View>
+                <View style={styles.requirementItem}>
+                  <View style={styles.bullet} />
+                  <Text style={styles.requirementText}>Принаймні 8 символів</Text>
+                </View>
+              </View>
+            </View>
+          </View>
         </View>
       )}
 
@@ -246,6 +359,23 @@ const styles = StyleSheet.create({
     color: '#000',
   },
   registrationDate: {
+    fontSize: 12,
+    color: '#666',
+    marginTop: 4,
+  },
+  securityHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 8,
+  },
+  securityAvatar: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#d3d3d3',
+    marginRight: 12,
+  },
+  securityDescription: {
     fontSize: 12,
     color: '#666',
     marginTop: 4,
@@ -351,12 +481,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000',
   },
-  placeholderText: {
-    fontSize: 16,
-    color: '#999',
-    textAlign: 'center',
-    marginTop: 20,
-  },
   bottomSpacer: {
     height: 40,
   },
@@ -364,43 +488,118 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     marginBottom: 8,
+    flexWrap: 'wrap',
   },
   themeItem: {
     alignItems: 'center',
+    width: '48%',
+    marginBottom: 12,
   },
   themeBlock: {
     width: 100,
     height: 60,
     backgroundColor: '#d3d3d3',
-    borderRadius: 4,
-    borderWidth: 1,
+    borderRadius: 10,
+    position: 'relative',
+  },
+  themeBlockActive: {
+    borderWidth: 2,
     borderColor: '#000',
-    justifyContent: 'center',
-    alignItems: 'center',
   },
   themeIndicator: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    position: 'absolute',
+    bottom: 6,
+    right: 6,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
     backgroundColor: '#000',
   },
   themeLabel: {
-    fontSize: 12,
+    marginTop: 6,
+    fontSize: 14,
     color: '#000',
-    textAlign: 'center',
-    marginTop: 4,
   },
-  themeActive: {
-    borderColor: '#000',
-    borderWidth: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3, // Для Android
+  notificationContainer: {
+    marginTop: 8,
   },
-  themeHover: {
-    backgroundColor: '#c0c0c0', // Легке затемнення при натисканні
+  notificationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    paddingVertical: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: '#e0e0e0',
+  },
+  customCheckbox: {
+    width: 20,
+    height: 20,
+    borderWidth: 1,
+    borderColor: '#666',
+    borderRadius: 4,
+  },
+  customCheckboxChecked: {
+    backgroundColor: '#000',
+  },
+  notificationText: {
+    fontSize: 14,
+    color: '#666',
+    flex: 1,
+    marginRight: 12,
+  },
+  passwordSection: {
+    marginTop: 12,
+  },
+  passwordLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#000',
+    marginBottom: 8,
+    marginTop: 12,
+  },
+  passwordInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 8,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 14,
+    color: '#000',
+  },
+  passwordToggle: {
+    padding: 10,
+  },
+  passwordRequirements: {
+    marginTop: 16,
+    marginBottom: 20,
+  },
+  requirementTitle: {
+    fontSize: 14,
+    color: '#666',
+    marginBottom: 8,
+  },
+  requirementItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 4,
+  },
+  bullet: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#ccc',
+    marginRight: 8,
+  },
+  requirementText: {
+    fontSize: 13,
+    color: '#666',
   },
 });
 
